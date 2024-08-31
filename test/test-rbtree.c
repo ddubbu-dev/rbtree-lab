@@ -368,6 +368,11 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 }
 
 int main(void) {
+  // fyi. 컴파일 결과 확인하고 싶으면?
+  // freopen("debug/w_printf/output.txt", "w", stdout);
+  // print_hello_world("Hello World!");
+  // print_hello_world("테스트 완료");
+
   test_init();
   test_insert_single(1024);
   test_find_single(512, 1024);

@@ -1,0 +1,40 @@
+# Makefile.lab
+
+CC = gcc
+CFLAGS = -I./src
+LDFLAGS =
+
+# 소스 파일과 오브젝트 파일
+SRC = test/test-rbtree.c src/rbtree.c
+OBJ = test/test-rbtree.o src/rbtree.o
+
+# 실행 파일과 결과 파일
+EXEC = debug/w_printf/run.o
+OUTPUT_FILE = debug/w_printf/output.txt
+
+# 기본 타겟
+all: $(EXEC) run
+
+# 실행 파일 생성
+$(EXEC): $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $(OBJ)
+
+# 오브젝트 파일 생성
+test/test-rbtree.o: test/test-rbtree.c src/rbtree.h
+	$(CC) $(CFLAGS) -c test/test-rbtree.c -o test/test-rbtree.o
+
+src/rbtree.o: src/rbtree.c src/rbtree.h
+	$(CC) $(CFLAGS) -c src/rbtree.c -o src/rbtree.o
+
+# 실행 및 결과 파일 리다이렉션
+run: $(EXEC)
+	@mkdir -p debug/w_printf
+	$(EXEC) > $(OUTPUT_FILE)
+	@echo "Results are written to $(OUTPUT_FILE)"
+
+# 클린업
+clean:
+	rm -f $(OBJ) $(EXEC) $(OUTPUT_FILE)
+
+# PHONY 타겟
+.PHONY: all run clean

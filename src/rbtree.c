@@ -1,6 +1,9 @@
 #include "rbtree.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+
+void print_hello_world(char *msg) { printf("%s\n", msg); }
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
