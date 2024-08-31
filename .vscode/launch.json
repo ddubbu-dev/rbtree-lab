@@ -1,7 +1,29 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
-  "configurations": []
+  "configurations": [
+      {
+          "name": "Debug",              // 디버깅 구성 이름
+          "type": "cppdbg",             // C/C++ 디버깅 타입
+          "request": "launch",          // 실행 요청
+          "program": "${workspaceFolder}/debug/ide/main.o", // 실행할 프로그램 >> 임시로 debug 연습 폴더 지정
+          "args": [],                   // 프로그램 인수 (필요 시 추가)
+          "stopAtEntry": false,         // 프로그램 시작 시 중단 여부
+          "cwd": "${workspaceFolder}",  // 현재 작업 디렉토리
+          "environment": [],            // 환경 변수 (필요 시 추가)
+          "externalConsole": false,     // 외부 콘솔 사용 여부
+          "MIMode": "gdb",              // GDB 사용
+          "setupCommands": [
+              {
+                  "description": "Enable pretty-printing for gdb",
+                  "text": "-enable-pretty-printing",
+                  "ignoreFailures": true
+              }
+          ],
+          "preLaunchTask": "build",     // 디버깅 시작 전에 실행할 빌드 작업
+          "miDebuggerPath": "/usr/bin/gdb", // GDB 경로 (시스템에 맞게 수정)
+          "logging": {
+              "engineLogging": true
+          }
+      }
+  ]
 }
