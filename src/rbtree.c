@@ -5,9 +5,13 @@
 
 void print_hello_world(char *msg) { printf("%s\n", msg); }
 
+// TODO: initialize struct if needed
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-  // TODO: initialize struct if needed
+
+  p->root = p->nil;
+  p->nil = NULL;
+
   return p;
 }
 
