@@ -4,6 +4,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void test_init(void);
+void test_insert_single(const key_t key);
+void test_find_single(const key_t key, const key_t wrong_key);
+void test_erase_root(const key_t key);
+static void insert_arr(rbtree *t, const key_t *arr, const size_t n);
+static int comp(const void *p1, const void *p2);
+void test_minmax(key_t *arr, const size_t n);
+void test_to_array(rbtree *t, const key_t *arr, const size_t n);
+void test_multi_instance();
+static bool search_traverse(const node_t *p, key_t *min, key_t *max,
+                            node_t *nil);
+void test_search_constraint(const rbtree *t);
+static void init_color_traverse(void);
+static bool color_traverse(const node_t *p, const color_t parent_color,
+                           const int black_depth, node_t *nil);
+void test_color_constraint(const rbtree *t);
+void test_rb_constraints(const key_t arr[], const size_t n);
+void test_distinct_values();
+void test_duplicate_values();
+void test_minmax_suite();
+void test_to_array_suite();
+void test_find_erase(rbtree *t, const key_t *arr, const size_t n);
+void test_find_erase_fixed();
+void test_find_erase_rand(const size_t n, const unsigned int seed);
+
+int main(void) {
+  // fyi. 컴파일 결과 확인하고 싶으면?
+  // freopen("debug/w_printf/output.txt", "w", stdout);
+  // print_hello_world("Hello World!");
+  // print_hello_world("테스트 완료");
+
+  test_init();
+  test_insert_single(1024);
+  test_find_single(512, 1024);
+  test_erase_root(128);
+  test_find_erase_fixed();
+  test_minmax_suite();
+  test_to_array_suite();
+  test_distinct_values();
+  test_duplicate_values();
+  test_multi_instance();
+  test_find_erase_rand(10000, 17);
+  printf("Passed all tests!\n");
+}
+
 // new_rbtree should return rbtree struct with null root node
 void test_init(void) {
   rbtree *t = new_rbtree();
@@ -365,24 +410,4 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 
   free(arr);
   delete_rbtree(t);
-}
-
-int main(void) {
-  // fyi. 컴파일 결과 확인하고 싶으면?
-  // freopen("debug/w_printf/output.txt", "w", stdout);
-  // print_hello_world("Hello World!");
-  // print_hello_world("테스트 완료");
-
-  test_init();
-  test_insert_single(1024);
-  test_find_single(512, 1024);
-  test_erase_root(128);
-  test_find_erase_fixed();
-  test_minmax_suite();
-  test_to_array_suite();
-  test_distinct_values();
-  test_duplicate_values();
-  test_multi_instance();
-  test_find_erase_rand(10000, 17);
-  printf("Passed all tests!\n");
 }
