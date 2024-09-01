@@ -12,10 +12,11 @@
     "typescript": ".ts"
   },
   "git.ignoreMissingGitWarning": true,
-  "code-runner.runInTerminal": true,
   "C_Cpp.updateChannel": "Insiders",
   "editor.multiCursorModifier": "ctrlCmd",
   "C_Cpp.default.cppStandard": "c++17",
   "C_Cpp.default.cStandard": "c11",
-  "terminal.integrated.defaultProfile.windows": "Command Prompt"
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "c": "cd $dirWithoutTrailingSlash gcc $fileName -g -o $fileNameWithoutExt && ./$fileNameWithoutExt.exe",
+  "code-runner.runInTerminal": true,
 }
