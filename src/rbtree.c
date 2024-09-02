@@ -83,6 +83,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   if (t->root == t->nil) {
     t->root = new_node;
     new_node->parent = t->nil;
+    new_node->color = RBTREE_BLACK;
   } else {
     node_t **result = find_target_node(t, key);
     node_t *p = result[0];
