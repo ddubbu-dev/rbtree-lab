@@ -7,13 +7,13 @@
 // 완료
 void test_init(void);
 void test_insert_single(const key_t key);
+void test_find_single(const key_t key, const key_t wrong_key);
 
 // 테스트 필요
 
 // 진행중
 
 // 해야할일
-void test_find_single(const key_t key, const key_t wrong_key);
 void test_erase_root(const key_t key);
 static void insert_arr(rbtree *t, const key_t *arr, const size_t n);
 static int comp(const void *p1, const void *p2);
@@ -39,9 +39,9 @@ void test_find_erase_rand(const size_t n, const unsigned int seed);
 int main(void) {
   test_init();
   test_insert_single(1024);
+  test_find_single(512, 1024);
 
   // TODO: 주석 한개씩 풀어갈 예정
-  // test_find_single(512, 1024);
   // test_erase_root(128);
   // test_find_erase_fixed();
   // test_minmax_suite();

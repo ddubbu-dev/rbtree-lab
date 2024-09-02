@@ -12,8 +12,6 @@ node_t *create_node(rbtree *t, const color_t color, const key_t key) {
   return p;
 }
 
-typedef enum { LEAF, LEFT_CHILD, RIGHT_CHILD } direction_t;
-
 void link_parent_child_node(node_t *p, node_t *c) {
   if (c->key < p->key) {
     p->left = c;
@@ -23,16 +21,19 @@ void link_parent_child_node(node_t *p, node_t *c) {
   c->parent = p;
 }
 
-node_t **find_target_node(rbtree *t, const key_t key) {
+node_pair_t find_target_node(rbtree *t, const key_t key) {
   /**
    * key 값을 가진 노드가
-   * - 있다면: 해당 노드와 부모 전달
-   * - 없다면: 최종 말단 노드(p), cur=NULL로 반환
+   * - 있다면: 해당 노드(x)와 부모(p) 반환
+   * - 없다면: x=NULL, 최종 말단 노드(p) 반환
    */
+
   node_t *p = t->nil;
   node_t *x = t->root;
 
   while (x != t->nil) {
+    p = x;
+
     const key_t cur_key = x->key;
     if (cur_key == key) {
       break;
@@ -43,11 +44,11 @@ node_t **find_target_node(rbtree *t, const key_t key) {
     } else {
       x = x->left;
     }
-
-    p = x;
   }
 
-  node_t *result[2] = {p, x};
+  node_pair_t result;
+  result.parent = p;
+  result.target_node = x;
 
   return result;
 }
@@ -56,23 +57,11 @@ node_t **find_target_node(rbtree *t, const key_t key) {
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
 
-  p->root = p->nil;
   p->nil = NULL;
+  p->root = p->nil;
 
   return p;
 }
-
-//// fyi. test-rbtree.c 에서 디버그 모드 실행 안돼서 여기만의 main을 만듦
-// void main() {
-//   rbtree *t = new_rbtree();
-//   node_t *p = rbtree_insert(t, 1024);
-//   printf("p != NULL=%d\n", p != NULL);
-//   printf("t->root == p=%d\n", t->root == p);
-//   printf("p->key == key=%d\n", p->key == 1024);
-//   printf("p->left == NULL=%d\n", p->left == NULL);
-//   printf("p->right == NULL=%d\n", p->right == NULL);
-//   printf("p->parent == NULL%d\n", p->parent == NULL);
-// }
 
 // 🏃‍♀️implement insert
 node_t *rbtree_insert(rbtree *t, const key_t key) {
@@ -85,22 +74,23 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     new_node->parent = t->nil;
     new_node->color = RBTREE_BLACK;
   } else {
-    node_t **result = find_target_node(t, key);
-    node_t *p = result[0];
-
-    link_parent_child_node(p, new_node);
+    node_pair_t pair = find_target_node(t, key);
+    link_parent_child_node(pair.parent, new_node);
   }
 
   // TODO: REFIXING
   return t->root;
 }
 
-// 🏃‍♀️implement find
+// ✅ implement find
 node_t *rbtree_find(const rbtree *t, const key_t key) {
-  node_t **result = find_target_node(t, key);
-  node_t *x = result[1];
-  return x;
+  node_pair_t pair = find_target_node(t, key);
+  return pair.target_node;
 }
+
+// // fyi. test-rbtree.c 에서 디버그 모드 실행 안돼서 여기만의 main을 만듦
+// void main() {
+// }
 
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
