@@ -35,9 +35,9 @@ typedef struct {
   node_t *target_node;
 } node_pair_t;
 
-node_t *create_node(rbtree *t, const color_t color, const key_t key);
-void link_parent_child_node(node_t *p, node_t *c);
-node_pair_t find_target_node(rbtree *t, const key_t key);
+node_t *util_create_node(rbtree *t, const color_t color, const key_t key);
+void util_link_parent_child_node(node_t *p, node_t *c);
+node_pair_t util_find_target_node(rbtree *t, const key_t key);
 
 // TODO
 typedef enum { LEAF, LEFT_CHILD, RIGHT_CHILD } direction_t;

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-node_t *create_node(rbtree *t, const color_t color, const key_t key) {
+node_t *util_create_node(rbtree *t, const color_t color, const key_t key) {
   node_t *p = (node_t *)calloc(1, sizeof(node_t));
   p->color = color;
   p->key = key;
@@ -12,7 +12,7 @@ node_t *create_node(rbtree *t, const color_t color, const key_t key) {
   return p;
 }
 
-void link_parent_child_node(node_t *p, node_t *c) {
+void util_link_parent_child_node(node_t *p, node_t *c) {
   if (c->key < p->key) {
     p->left = c;
   } else {
@@ -21,7 +21,7 @@ void link_parent_child_node(node_t *p, node_t *c) {
   c->parent = p;
 }
 
-node_pair_t find_target_node(rbtree *t, const key_t key) {
+node_pair_t util_find_target_node(rbtree *t, const key_t key) {
   /**
    * key 값을 가진 노드가
    * - 있다면: 해당 노드(x)와 부모(p) 반환
@@ -66,7 +66,7 @@ rbtree *new_rbtree(void) {
 // 🏃‍♀️implement insert
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // BST insert
-  node_t *new_node = create_node(t, RBTREE_RED, key);
+  node_t *new_node = util_create_node(t, RBTREE_RED, key);
 
   node_t *p = t->root;
   if (t->root == t->nil) {
@@ -74,8 +74,8 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     new_node->parent = t->nil;
     new_node->color = RBTREE_BLACK;
   } else {
-    node_pair_t pair = find_target_node(t, key);
-    link_parent_child_node(pair.parent, new_node);
+    node_pair_t pair = util_find_target_node(t, key);
+    util_link_parent_child_node(pair.parent, new_node);
   }
 
   // TODO: REFIXING
@@ -84,7 +84,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
 // ✅ implement find
 node_t *rbtree_find(const rbtree *t, const key_t key) {
-  node_pair_t pair = find_target_node(t, key);
+  node_pair_t pair = util_find_target_node(t, key);
   return pair.target_node;
 }
 
