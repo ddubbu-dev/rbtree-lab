@@ -22,7 +22,7 @@ void util_link_parent_child_node(node_t *p, node_t *c) {
   c->parent = p;
 }
 
-node_pair_t util_find_target_node(rbtree *t, const key_t key) {
+node_pair_t util_find_target_node(rbtree *t, const key_t target_key) {
   /**
    * key 값을 가진 노드가
    * - 있다면: 해당 노드(x)와 부모(p) 반환
@@ -36,11 +36,11 @@ node_pair_t util_find_target_node(rbtree *t, const key_t key) {
     p = x;
 
     const key_t cur_key = x->key;
-    if (cur_key == key) {
+    if (cur_key == target_key) {
       break;
     }
 
-    if (cur_key > key) {
+    if (cur_key < target_key) {
       x = x->right;
     } else {
       x = x->left;
@@ -383,9 +383,12 @@ int rbtree_erase(rbtree *t, node_t *z) {
   if (y_original_color == RBTREE_BLACK) {
     util_rbtree_delete_fixup(t, x);
   }
+  printf("==================\n[Delete]%d", z);
+  util_print_rbtree(t->root, t->nil, 0);
 }
 
-void util_inorder_traversal(node_t *node, node_t *nil, key_t *arr, size_t *index) {
+void util_inorder_traversal(node_t *node, node_t *nil, key_t *arr,
+                            size_t *index) {
   if (node == nil) {
     return;
   }
