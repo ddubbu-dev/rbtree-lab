@@ -88,18 +88,26 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   return pair.target_node;
 }
 
-// // fyi. test-rbtree.c 에서 디버그 모드 실행 안돼서 여기만의 main을 만듦
-// void main() {
-// }
-
+// 🏃‍♀️implement find
 node_t *rbtree_min(const rbtree *t) {
-  // TODO: implement find
-  return t->root;
+  node_t *x = t->root;
+
+  while (x && x->left != t->nil) {
+    x = x->left;
+  }
+
+  return x;
 }
 
+// 🏃‍♀️implement find
 node_t *rbtree_max(const rbtree *t) {
-  // TODO: implement find
-  return t->root;
+  node_t *x = t->root;
+
+  while (x && x->right != t->nil) {
+    x = x->right;
+  }
+
+  return x;
 }
 
 void delete_rbtree(rbtree *t) {
@@ -107,12 +115,31 @@ void delete_rbtree(rbtree *t) {
   free(t);
 }
 
+// 🏃‍♀️implement erase
 int rbtree_erase(rbtree *t, node_t *p) {
-  // TODO: implement erase
+  node_pair_t pair = util_find_target_node(t, p->key);
+
+  // TODO: find p->right min 그리고 successor 반영
+  // TODO: REFIXING
+}
+
+// 🏃‍♀️implement to_array
+int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
+  for (int i = 0; i < n; i++) {
+    rbtree_insert(t, arr[i]);
+  }
+
   return 0;
 }
 
-int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-  // TODO: implement to_array
-  return 0;
+void main() {
+  rbtree *t = new_rbtree();
+
+  key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12};
+  const size_t n = sizeof(entries) / sizeof(entries[0]);
+  rbtree_to_array(t, entries, n);
+
+  // node_t *q = rbtree_max(t);
+  // printf("(q != NULL) ? %d", q != NULL);
+  // printf("(q->key == entries[n - 1]) ? %d", q->key == entries[n - 1]);
 }

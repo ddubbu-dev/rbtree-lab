@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// 작업 불필요
+static void insert_arr(rbtree *t, const key_t *arr, const size_t n);
+static bool search_traverse(const node_t *p, key_t *min, key_t *max,
+                            node_t *nil);
+static void init_color_traverse(void);
+static bool color_traverse(const node_t *p, const color_t parent_color,
+                           const int black_depth, node_t *nil);
+
 // 완료
 void test_init(void);
 void test_insert_single(const key_t key);
@@ -15,17 +23,11 @@ void test_find_single(const key_t key, const key_t wrong_key);
 
 // 해야할일
 void test_erase_root(const key_t key);
-static void insert_arr(rbtree *t, const key_t *arr, const size_t n);
 static int comp(const void *p1, const void *p2);
 void test_minmax(key_t *arr, const size_t n);
 void test_to_array(rbtree *t, const key_t *arr, const size_t n);
 void test_multi_instance();
-static bool search_traverse(const node_t *p, key_t *min, key_t *max,
-                            node_t *nil);
 void test_search_constraint(const rbtree *t);
-static void init_color_traverse(void);
-static bool color_traverse(const node_t *p, const color_t parent_color,
-                           const int black_depth, node_t *nil);
 void test_color_constraint(const rbtree *t);
 void test_rb_constraints(const key_t arr[], const size_t n);
 void test_distinct_values();
