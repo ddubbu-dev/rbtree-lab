@@ -28,13 +28,6 @@ node_t *rbtree_max(const rbtree *);
 int rbtree_erase(rbtree *, node_t *);
 int rbtree_to_array(const rbtree *, key_t *, const size_t);
 
-// CUSTOM
-
-typedef struct {
-  node_t *parent;
-  node_t *target_node;
-} node_pair_t;
-
 // TODO: 모아서 rbtree.c 상단에 프로토타입 추가 필요함
 
 #endif  // _RBTREE_H_

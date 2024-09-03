@@ -48,9 +48,9 @@ int main(void) {
   test_multi_instance();
 
   // TODO: 주석 한개씩 풀어갈 예정
-  // test_erase_root(128);
-  // test_find_erase_fixed();
-  // test_find_erase_rand(10000, 17);
+  test_erase_root(128);
+  test_find_erase_fixed();
+  test_find_erase_rand(10000, 17);
 
   printf("Passed all tests!\n");
 }
