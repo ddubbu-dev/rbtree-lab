@@ -28,7 +28,7 @@ node_t *util_create_node(rbtree *t, const key_t key) {
   return p;
 }
 
-int util_is_nil_node(rbtree *t, node_t *x) { return x == t->nil ? 1 : 0; }
+int util_is_nil(rbtree *t, node_t *x) { return x == t->nil ? 1 : 0; }
 
 int util_is_left_child(rbtree *t, node_t *x) {
   return x == x->parent->left ? 1 : 0;
@@ -174,15 +174,15 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   node_t *new_node = util_create_node(t, key);
   node_t *cur = t->root;
 
-  while (!util_is_nil_node(t, cur)) {
+  while (!util_is_nil(t, cur)) {
     if (key < cur->key) {
-      if (util_is_nil_node(t, cur->left)) {
+      if (util_is_nil(t, cur->left)) {
         cur->left = new_node;
         break;
       }
       cur = cur->left;
     } else {
-      if (util_is_nil_node(t, cur->right)) {
+      if (util_is_nil(t, cur->right)) {
         cur->right = new_node;
         break;
       }
@@ -192,7 +192,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
   new_node->parent = cur;
 
-  if (cur == t->nil) {
+  if (util_is_nil(t, cur)) {
     t->root = new_node;
   }
 
@@ -212,7 +212,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 // ✅ implement find
 node_t *rbtree_find(const rbtree *t, const key_t target_key) {
   node_t *cur = t->root;
-  while (!util_is_nil_node(t, cur)) {
+  while (!util_is_nil(t, cur)) {
     const key_t cur_key = cur->key;
     if (cur_key == target_key) {
       return cur;
@@ -231,7 +231,7 @@ node_t *rbtree_find(const rbtree *t, const key_t target_key) {
 node_t *rbtree_min(const rbtree *t) {
   node_t *x = t->root;
 
-  while (x && x->left != t->nil) {
+  while (!util_is_nil(t, x->left)) {
     x = x->left;
   }
 
@@ -242,7 +242,7 @@ node_t *rbtree_min(const rbtree *t) {
 node_t *rbtree_max(const rbtree *t) {
   node_t *x = t->root;
 
-  while (x && x->right != t->nil) {
+  while (!util_is_nil(t, x->right)) {
     x = x->right;
   }
 
@@ -255,7 +255,7 @@ void delete_rbtree(rbtree *t) {
 }
 
 void util_rbtree_transplant(rbtree *t, node_t *u, node_t *v) {
-  if (u->parent == t->nil) {
+  if (util_is_nil(t, u->parent)) {
     t->root = v;
   } else if (util_is_left_child(t, u)) {
     u->parent->left = v;
@@ -263,20 +263,20 @@ void util_rbtree_transplant(rbtree *t, node_t *u, node_t *v) {
     u->parent->right = v;
   }
 
-  if (v != t->nil) {  // TODO: 의사코드랑 다른 부분 이해 필요
+  if (!util_is_nil(t, v)) {  // TODO: 의사코드랑 다른 부분 이해 필요
     v->parent = u->parent;
   }
 }
 
 node_t *util_find_min_node(rbtree *t, node_t *x) {
-  while (x && x->left != t->nil) {
+  while (!util_is_nil(t, x->left)) {
     x = x->left;
   }
 
   return x;
 }
 node_t *util_find_max_node(rbtree *t, node_t *x) {
-  while (x && x->right != t->nil) {
+  while (!util_is_nil(t, x->right)) {
     x = x->right;
   }
 
@@ -285,7 +285,7 @@ node_t *util_find_max_node(rbtree *t, node_t *x) {
 
 void util_rbtree_delete_fixup(rbtree *t, node_t *x) {
   node_t *w;
-  while (x != t->root && x != t->nil && x->color == RBTREE_BLACK) {
+  while (x != t->root && !util_is_nil(t, x) && x->color == RBTREE_BLACK) {
     if (util_is_left_child(t, x)) {
       w = x->parent->right;
       // [case1]
@@ -357,10 +357,10 @@ int rbtree_erase(rbtree *t, node_t *z) {
   color_t y_original_color = y->color;
 
   // BST Delete
-  if (z->left == t->nil) {
+  if (util_is_nil(t, z->left)) {
     x = z->right;
     util_rbtree_transplant(t, z, z->right);
-  } else if (z->right == t->nil) {
+  } else if (util_is_nil(t, z->right)) {
     x = z->left;
     util_rbtree_transplant(t, z, z->left);
   } else {
@@ -373,7 +373,7 @@ int rbtree_erase(rbtree *t, node_t *z) {
       y->right = z->right;
       y->right->parent = y;
     } else {
-      if (x != t->nil) {  // TODO: 확인 필요
+      if (util_is_nil(t, x)) {  // TODO: 확인 필요
         x->parent = y;
       }
     }
