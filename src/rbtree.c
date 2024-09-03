@@ -3,23 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-node_t *util_create_node(rbtree *t, const color_t color, const key_t key) {
+node_t *util_create_node(rbtree *t, const key_t key) {
   node_t *p = (node_t *)calloc(1, sizeof(node_t));
-  p->color = color;
   p->key = key;
+  p->color = RBTREE_RED;
   p->parent = p->left = p->right = t->nil;
 
   return p;
-}
-
-void util_link_parent_child_node(node_t *p, node_t *c) {
-  // TODO: roatate에서 사용할 수 있도록
-  if (c->key < p->key) {
-    p->left = c;
-  } else {
-    p->right = c;
-  }
-  c->parent = p;
 }
 
 node_pair_t util_find_target_node(const rbtree *t, const key_t target_key) {
@@ -80,9 +70,9 @@ int is_left_child(rbtree *t, node_t *x) {
 // ✅ initialize struct if needed
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-  p->nil = NULL;
+  p->nil = (node_t *)calloc(1, sizeof(node_t));
+  p->nil->color = RBTREE_BLACK;
   p->root = p->nil;
-
   return p;
 }
 
@@ -188,7 +178,7 @@ void util_rbtree_insert_fixup(rbtree *t, node_t *z) {
 // ✅ implement insert
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // BST insert
-  node_t *z = util_create_node(t, RBTREE_RED, key);
+  node_t *z = util_create_node(t, key);
   node_t *x = t->root;  // cur
   node_t *y = t->nil;   // parent
 
