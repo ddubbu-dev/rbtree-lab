@@ -42,10 +42,6 @@ void util_left_rotate(rbtree *t, node_t *x);
 void util_right_rotate(rbtree *t, node_t *x);
 void util_rbtree_insert_fixup(rbtree *t, node_t *z);
 void util_rbtree_delete_fixup(rbtree *t, node_t *z);
-
-// TODO
-typedef enum { LEAF, LEFT_CHILD, RIGHT_CHILD } direction_t;
-// 부모 자식 위치 전환
-void transplant();
+// TODO: 모아서 rbtree.c 상단에 프로토타입 추가 필요함
 
 #endif  // _RBTREE_H_

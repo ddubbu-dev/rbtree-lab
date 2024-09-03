@@ -11,30 +11,29 @@ static bool search_traverse(const node_t *p, key_t *min, key_t *max,
 static void init_color_traverse(void);
 static bool color_traverse(const node_t *p, const color_t parent_color,
                            const int black_depth, node_t *nil);
+static int comp(const void *p1, const void *p2);
+void test_minmax(key_t *arr, const size_t n);
+void test_to_array(rbtree *t, const key_t *arr, const size_t n);
+void test_find_erase(rbtree *t, const key_t *arr, const size_t n);
+void test_search_constraint(const rbtree *t);
+void test_color_constraint(const rbtree *t);
+void test_rb_constraints(const key_t arr[], const size_t n);
 
 // 완료
 void test_init(void);
 void test_insert_single(const key_t key);
 void test_find_single(const key_t key, const key_t wrong_key);
-
+void test_to_array_suite();
+void test_erase_root(const key_t key);
+void test_minmax_suite();
+void test_multi_instance();
+void test_distinct_values();
+void test_duplicate_values();
 // 테스트 필요
 
 // 진행중
 
 // 해야할일
-void test_erase_root(const key_t key);
-static int comp(const void *p1, const void *p2);
-void test_minmax(key_t *arr, const size_t n);
-void test_to_array(rbtree *t, const key_t *arr, const size_t n);
-void test_multi_instance();
-void test_search_constraint(const rbtree *t);
-void test_color_constraint(const rbtree *t);
-void test_rb_constraints(const key_t arr[], const size_t n);
-void test_distinct_values();
-void test_duplicate_values();
-void test_minmax_suite();
-void test_to_array_suite();
-void test_find_erase(rbtree *t, const key_t *arr, const size_t n);
 void test_find_erase_fixed();
 void test_find_erase_rand(const size_t n, const unsigned int seed);
 
@@ -43,15 +42,16 @@ int main(void) {
   test_insert_single(1024);
   test_find_single(512, 1024);
   test_to_array_suite();
+  test_erase_root(128);
+  test_minmax_suite();
+  test_distinct_values();
+  test_duplicate_values();
+  test_multi_instance();
 
   // TODO: 주석 한개씩 풀어갈 예정
-  // test_erase_root(128);
   // test_find_erase_fixed();
-  // test_minmax_suite();
-  // test_distinct_values();
-  // test_duplicate_values();
-  // test_multi_instance();
   // test_find_erase_rand(10000, 17);
+
   printf("Passed all tests!\n");
 }
 
