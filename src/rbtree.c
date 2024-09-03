@@ -22,7 +22,7 @@ void util_link_parent_child_node(node_t *p, node_t *c) {
   c->parent = p;
 }
 
-node_pair_t util_find_target_node(rbtree *t, const key_t target_key) {
+node_pair_t util_find_target_node(const rbtree *t, const key_t target_key) {
   /**
    * key 값을 가진 노드가
    * - 있다면: 해당 노드(x)와 부모(p) 반환
@@ -55,6 +55,8 @@ node_pair_t util_find_target_node(rbtree *t, const key_t target_key) {
 }
 
 void util_print_rbtree(node_t *node, node_t *nil, int depth) {
+  return;  // TODO: print 불필요
+
   if (node == nil) {
     return;
   }
@@ -146,20 +148,20 @@ void util_rbtree_insert_fixup(rbtree *t, node_t *z) {
       } else {
         if (!is_left_child(t, z)) {
           // [case2] 케이스3으로 전환
-          printf("[case2]\n");
-          util_print_rbtree(t->root, t->nil, 0);
+          // printf("[case2]\n");
+          // util_print_rbtree(t->root, t->nil, 0);
           z = z->parent;
           util_left_rotate(t, z);
         }
         // [case3]
-        printf("[case3]\n");
-        util_print_rbtree(t->root, t->nil, 0);
+        // printf("[case3]\n");
+        // util_print_rbtree(t->root, t->nil, 0);
         z->parent->color = RBTREE_BLACK;
         z->parent->parent->color = RBTREE_RED;
         // TODO: 여기부터 다시 살펴보기 흐음 rotate 주체가 어렵네
         util_right_rotate(t, z->parent->parent);
-        printf("[util_right_rotate]\n");
-        util_print_rbtree(t->root, t->nil, 0);
+        // printf("[util_right_rotate]\n");
+        // util_print_rbtree(t->root, t->nil, 0);
       }
     } else {
       node_t *y = z->parent->parent->left;
@@ -211,15 +213,15 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   z->left = t->nil;
   z->right = t->nil;
   z->color = RBTREE_RED;
-  printf("==================\n[Insert]%d\n", key);
-  printf("[before]\n");
-  util_print_rbtree(t->root, t->nil, 0);
-  printf("\n");
+  // printf("==================\n[Insert]%d\n", key);
+  // printf("[before]\n");
+  // util_print_rbtree(t->root, t->nil, 0);
+  // printf("\n");
 
   util_rbtree_insert_fixup(t, z);
-  printf("[after]\n");
-  util_print_rbtree(t->root, t->nil, 0);
-  printf("\n");
+  // printf("[after]\n");
+  // util_print_rbtree(t->root, t->nil, 0);
+  // printf("\n");
 
   return t->root;
 }
@@ -265,16 +267,20 @@ void util_rbtree_transplant(rbtree *t, node_t *u, node_t *v) {
   } else {
     u->parent->right = v;
   }
+
+  if (v != t->nil) {  // TODO: 의사코드랑 다른 부분 이해 필요
+    v->parent = u->parent;
+  }
 }
 
-node_t *util_find_min_node(rbtree *t, const node_t *x) {
+node_t *util_find_min_node(rbtree *t, node_t *x) {
   while (x && x->left != t->nil) {
     x = x->left;
   }
 
   return x;
 }
-node_t *util_find_max_node(rbtree *t, const node_t *x) {
+node_t *util_find_max_node(rbtree *t, node_t *x) {
   while (x && x->right != t->nil) {
     x = x->right;
   }
@@ -364,14 +370,17 @@ int rbtree_erase(rbtree *t, node_t *z) {
     util_rbtree_transplant(t, z, z->left);
   } else {
     y = util_find_min_node(t, z->right);
+    y_original_color = y->color;
     x = y->right;
 
-    if (y != z->right) {
+    if (y->parent != z) {  // TODO: 확인 필요
       util_rbtree_transplant(t, y, y->right);
       y->right = z->right;
       y->right->parent = y;
     } else {
-      x->parent = y;
+      if (x != t->nil) {  // TODO: 확인 필요
+        x->parent = y;
+      }
     }
 
     util_rbtree_transplant(t, z, y);
@@ -383,8 +392,10 @@ int rbtree_erase(rbtree *t, node_t *z) {
   if (y_original_color == RBTREE_BLACK) {
     util_rbtree_delete_fixup(t, x);
   }
-  printf("==================\n[Delete]%d", z);
+  // printf("==================\n[Delete]%d", z->key);
   util_print_rbtree(t->root, t->nil, 0);
+
+  return 0;
 }
 
 void util_inorder_traversal(node_t *node, node_t *nil, key_t *arr,

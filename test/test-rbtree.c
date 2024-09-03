@@ -47,10 +47,11 @@ int main(void) {
   test_distinct_values();
   test_duplicate_values();
   test_multi_instance();
+  test_find_erase_fixed();
+
+  // test_find_erase_rand(10000, 17);
 
   // TODO: 주석 한개씩 풀어갈 예정
-  // test_find_erase_fixed();
-  // test_find_erase_rand(10000, 17);
 
   printf("Passed all tests!\n");
 }

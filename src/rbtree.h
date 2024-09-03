@@ -37,7 +37,6 @@ typedef struct {
 
 node_t *util_create_node(rbtree *t, const color_t color, const key_t key);
 void util_link_parent_child_node(node_t *p, node_t *c);
-node_pair_t util_find_target_node(rbtree *t, const key_t key);
 void util_left_rotate(rbtree *t, node_t *x);
 void util_right_rotate(rbtree *t, node_t *x);
 void util_rbtree_insert_fixup(rbtree *t, node_t *z);
