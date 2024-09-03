@@ -13,6 +13,7 @@ node_t *util_create_node(rbtree *t, const color_t color, const key_t key) {
 }
 
 void util_link_parent_child_node(node_t *p, node_t *c) {
+  // TODO: roatate에서 사용할 수 있도록
   if (c->key < p->key) {
     p->left = c;
   } else {
@@ -53,32 +54,173 @@ node_pair_t util_find_target_node(rbtree *t, const key_t key) {
   return result;
 }
 
+void util_print_rbtree(node_t *node, node_t *nil, int depth) {
+  if (node == nil) {
+    return;
+  }
+  // 오른쪽 자식을 먼저 출력 (트리를 옆으로 눕혀서 출력하는 방식)
+  util_print_rbtree(node->right, nil, depth + 1);
+  for (int i = 0; i < depth; i++) {
+    printf("    ");
+  }
+  printf("%d(%s)\n", node->key, node->color == RBTREE_RED ? "R" : "B");
+  // 왼쪽 자식을 출력
+  util_print_rbtree(node->left, nil, depth + 1);
+}
+
+int is_left_child(rbtree *t, node_t *x) {
+  if (x != t->nil && x->parent != t->nil) {
+    return x == x->parent->left ? 1 : 0;
+  }
+  return 0;  // TODO
+}
+
 // ✅ initialize struct if needed
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-
   p->nil = NULL;
   p->root = p->nil;
 
   return p;
 }
 
+void util_left_rotate(rbtree *t, node_t *x) {
+  node_t *y = x->right;
+  x->right = y->left;
+  if (y->left != t->nil) {
+    y->left->parent = x;
+  }
+  y->parent = x->parent;
+
+  if (x->parent == t->nil) {
+    t->root = y;
+  } else if (is_left_child(t, x)) {
+    // 주의) 부모-자식 연결은 left,right 변경 불필요
+    x->parent->left = y;
+  } else {
+    x->parent->right = y;
+  }
+
+  y->left = x;
+  x->parent = y;
+}
+
+int util_is_nil_node(rbtree *t, node_t *x) { return x == t->nil ? 1 : 0; }
+
+// 문제: x가 root->parent 라서 nil, 이럴때는?
+
+void util_right_rotate(rbtree *t, node_t *x) {
+  node_t *y = x->left;  // y 끊기
+
+  // 부모: x, 자식: y-right
+  x->left = y->right;
+  if (x->right != t->nil) {
+    y->right->parent = x;
+  }
+
+  // 부모: x-parent, 자식: y
+  y->parent = x->parent;
+  if (x->parent == t->nil) {
+    t->root = y;
+  } else if (is_left_child(t, x)) {
+    x->parent->left = y;
+  } else {
+    x->parent->right = y;
+  }
+
+  // 부모: y, 자식: x
+  y->right = x;
+  x->parent = y;
+}
+
+void util_rbtree_insert_fixup(rbtree *t, node_t *z) {
+  while (z->parent != t->nil && z->parent->color == RBTREE_RED) {
+    if (is_left_child(t, z->parent)) {
+      node_t *y = z->parent->parent->right;
+      if (y != t->nil && y->color == RBTREE_RED) {
+        // [case1] z의 부모와 삼촌이 모두 레드인가?
+        z->parent->color = RBTREE_BLACK;
+        y->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        z = z->parent->parent;
+      } else {
+        if (!is_left_child(t, z)) {
+          // [case2] 케이스3으로 전환
+          printf("[case2]\n");
+          util_print_rbtree(t->root, t->nil, 0);
+          z = z->parent;
+          util_left_rotate(t, z);
+        }
+        // [case3]
+        printf("[case3]\n");
+        util_print_rbtree(t->root, t->nil, 0);
+        z->parent->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        // TODO: 여기부터 다시 살펴보기 흐음 rotate 주체가 어렵네
+        util_right_rotate(t, z->parent->parent);
+        printf("[util_right_rotate]\n");
+        util_print_rbtree(t->root, t->nil, 0);
+      }
+    } else {
+      node_t *y = z->parent->parent->left;
+      if (y != t->nil && y->color == RBTREE_RED) {
+        z->parent->color = RBTREE_BLACK;
+        y->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        z = z->parent->parent;
+      } else {
+        if (z != t->nil && z == z->parent->left) {
+          z = z->parent;
+          util_right_rotate(t, z);
+        }
+        z->parent->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        util_left_rotate(t, z->parent->parent);
+      }
+    }
+  }
+
+  t->root->color = RBTREE_BLACK;
+}
+
 // 🏃‍♀️implement insert
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // BST insert
-  node_t *new_node = util_create_node(t, RBTREE_RED, key);
+  node_t *z = util_create_node(t, RBTREE_RED, key);
+  node_t *x = t->root;  // cur
+  node_t *y = t->nil;   // parent
 
-  node_t *p = t->root;
-  if (t->root == t->nil) {
-    t->root = new_node;
-    new_node->parent = t->nil;
-    new_node->color = RBTREE_BLACK;
-  } else {
-    node_pair_t pair = util_find_target_node(t, key);
-    util_link_parent_child_node(pair.parent, new_node);
+  while (x != t->nil) {
+    y = x;
+    if (z->key < x->key) {
+      x = x->left;
+    } else {
+      x = x->right;
+    }
   }
 
-  // TODO: REFIXING
+  z->parent = y;
+  if (y == t->nil) {
+    t->root = z;
+  } else if (z->key < y->key) {
+    y->left = z;
+  } else {
+    y->right = z;
+  }
+
+  z->left = t->nil;
+  z->right = t->nil;
+  z->color = RBTREE_RED;
+  printf("==================\n[Insert]%d\n", key);
+  printf("[before]\n");
+  util_print_rbtree(t->root, t->nil, 0);
+  printf("\n");
+
+  util_rbtree_insert_fixup(t, z);
+  printf("[after]\n");
+  util_print_rbtree(t->root, t->nil, 0);
+  printf("\n");
+
   return t->root;
 }
 
@@ -123,23 +265,19 @@ int rbtree_erase(rbtree *t, node_t *p) {
   // TODO: REFIXING
 }
 
-// 🏃‍♀️implement to_array
-int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-  for (int i = 0; i < n; i++) {
-    rbtree_insert(t, arr[i]);
+void in_order_traversal(node_t *node, node_t *nil, key_t *arr, size_t *index) {
+  if (node == nil) {
+    return;
   }
-
-  return 0;
+  // TODO: 포인터 변수인 이유 찾아보기
+  in_order_traversal(node->left, nil, arr, index);
+  arr[(*index)++] = node->key;
+  in_order_traversal(node->right, nil, arr, index);
 }
 
-void main() {
-  rbtree *t = new_rbtree();
-
-  key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12};
-  const size_t n = sizeof(entries) / sizeof(entries[0]);
-  rbtree_to_array(t, entries, n);
-
-  // node_t *q = rbtree_max(t);
-  // printf("(q != NULL) ? %d", q != NULL);
-  // printf("(q->key == entries[n - 1]) ? %d", q->key == entries[n - 1]);
+// ✅ implement to_array
+int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
+  size_t index = 0;
+  in_order_traversal(t->root, t->nil, arr, &index);
+  return 0;
 }

@@ -38,16 +38,14 @@ typedef struct {
 node_t *util_create_node(rbtree *t, const color_t color, const key_t key);
 void util_link_parent_child_node(node_t *p, node_t *c);
 node_pair_t util_find_target_node(rbtree *t, const key_t key);
+void util_left_rotate(rbtree *t, node_t *x);
+void util_right_rotate(rbtree *t, node_t *x);
+void util_rbtree_insert_fixup(rbtree *t, node_t *z);
+void util_rbtree_delete_fixup(rbtree *t, node_t *z);
 
 // TODO
 typedef enum { LEAF, LEFT_CHILD, RIGHT_CHILD } direction_t;
 // 부모 자식 위치 전환
 void transplant();
-// 왼쪽회전
-void left_rotate();
-// 오른쪽 회전
-void right_rotate();
-void refixing_after_insert();
-void refixing_after_delete();
 
 #endif  // _RBTREE_H_

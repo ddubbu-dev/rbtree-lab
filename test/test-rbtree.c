@@ -42,12 +42,12 @@ int main(void) {
   test_init();
   test_insert_single(1024);
   test_find_single(512, 1024);
+  test_to_array_suite();
 
   // TODO: 주석 한개씩 풀어갈 예정
   // test_erase_root(128);
   // test_find_erase_fixed();
   // test_minmax_suite();
-  // test_to_array_suite();
   // test_distinct_values();
   // test_duplicate_values();
   // test_multi_instance();
@@ -400,7 +400,6 @@ void test_find_erase_fixed() {
   assert(t != NULL);
 
   test_find_erase(t, arr, n);
-
   delete_rbtree(t);
 }
 
@@ -413,7 +412,6 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
   }
 
   test_find_erase(t, arr, n);
-
   free(arr);
   delete_rbtree(t);
 }
