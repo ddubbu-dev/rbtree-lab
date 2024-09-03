@@ -20,10 +20,10 @@ void util_right_rotate(rbtree *t, node_t *x);
 void util_insert_fixup(rbtree *t, node_t *z);
 node_t *util_subtree_min(const rbtree *t, node_t *sub_root);
 void util_transplant(rbtree *t, node_t *u, node_t *v);
+void util_link_parent_and_child(rbtree *t, node_t *p, node_t *c);
 void util_delete_fixup(rbtree *t, node_t *x);
 void util_inorder_traversal(node_t *node, node_t *nil, key_t *arr,
                             size_t *index);
-void util_link_parent_and_child(rbtree *t, node_t *p, node_t *c);
 
 rbtree *new_rbtree(void) {
   rbtree *t = (rbtree *)calloc(1, sizeof(rbtree));
@@ -160,14 +160,10 @@ void util_left_rotate(rbtree *t, node_t *x) {
   if (!util_is_nill(t, y->left)) {
     y->left->parent = x;
   }
-  y->parent = x->parent;
-  if (util_is_nill(t, x->parent)) {
-    t->root = y;
-  } else if (util_is_left_child(t, x)) {
-    x->parent->left = y;
-  } else {
-    x->parent->right = y;
-  }
+  util_link_parent_and_child(t, x->parent, y);
+
+  // TODO: 왜 연결 안될까?
+  // util_link_parent_and_child(t, y, x);
   y->left = x;
   x->parent = y;
   return;
@@ -179,14 +175,8 @@ void util_right_rotate(rbtree *t, node_t *x) {
   if (!util_is_nill(t, y->right)) {
     y->right->parent = x;
   }
-  y->parent = x->parent;
-  if (util_is_nill(t, x->parent)) {
-    t->root = y;
-  } else if (util_is_left_child(t, x)) {
-    x->parent->left = y;
-  } else {
-    x->parent->right = y;
-  }
+  util_link_parent_and_child(t, x->parent, y);
+
   y->right = x;
   x->parent = y;
   return;
@@ -244,21 +234,40 @@ void util_insert_fixup(rbtree *t, node_t *z) {
 node_t *util_subtree_min(const rbtree *t, node_t *sub_root) {
   node_t *cur = sub_root;
   if (util_is_nill(t, cur)) return cur;
-  while (!util_is_nill(t, cur->left)) {
-    cur = cur->left;
-  }
+  while (!util_is_nill(t, cur->left)) cur = cur->left;
   return cur;
 }
 
 void util_transplant(rbtree *t, node_t *u, node_t *v) {
-  if (util_is_nill(t, u->parent)) {
+  /**
+   * [명세] u를 끊고, u.p - v 신규 부모 자식으로 연결
+   *  u.p
+   *    \
+   *     u
+   *      \
+   *       v
+   */
+
+  if (util_is_nill(t, u->parent))
     t->root = v;
-  } else if (util_is_left_child(t, u)) {
+
+  else if (util_is_left_child(t, u))
     u->parent->left = v;
-  } else
+  else
     u->parent->right = v;
   v->parent = u->parent;
   return;
+}
+
+void util_link_parent_and_child(rbtree *t, node_t *p, node_t *c) {
+  c->parent = p;
+  if (util_is_nill(t, p)) {
+    t->root = c;
+  } else if (c->key < p->key) {
+    p->left = c;
+  } else {
+    p->right = c;
+  }
 }
 
 void util_delete_fixup(rbtree *t, node_t *x) {
@@ -334,15 +343,4 @@ void util_inorder_traversal(node_t *node, node_t *nil, key_t *arr,
   util_inorder_traversal(node->left, nil, arr, index);
   arr[(*index)++] = node->key;
   util_inorder_traversal(node->right, nil, arr, index);
-}
-
-void util_link_parent_and_child(rbtree *t, node_t *p, node_t *c) {
-  c->parent = p;
-  if (util_is_nill(t, p)) {
-    t->root = c;
-  } else if (c->key < p->key) {
-    p->left = c;
-  } else {
-    p->right = c;
-  }
 }
